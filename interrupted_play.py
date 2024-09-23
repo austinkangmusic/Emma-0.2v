@@ -120,7 +120,7 @@ def save_interrupted_file(original_file_path, whisper_model):
         out_wf.writeframes(buffer)
     print(f"Interrupted audio saved as {output_file}")
 
-def monitor_voice(silence_duration=2, max_no_voice_duration=5):
+def monitor_voice(silence_duration=2, max_no_voice_duration=60):
     global interrupted, playback_active
     interrupted = False
     playback_active = True
