@@ -3,7 +3,7 @@
 Get the folders
 1.
 ```bash
-git clone https://github.com/austinkangmusic/Emma-0.1v.git
+git clone https://github.com/austinkangmusic/Emma-0.2v.git
 ```
 
 ## Download the XTTS-v2 model.
