@@ -120,7 +120,7 @@ def save_interrupted_file(original_file_path, whisper_model):
         out_wf.writeframes(buffer)
     print(f"Interrupted audio saved as {output_file}")
 
-def monitor_voice(silence_duration=2):
+def monitor_voice(silence_duration=2, max_no_voice_duration=5):
     global interrupted, playback_active
     interrupted = False
     playback_active = True
@@ -132,6 +132,7 @@ def monitor_voice(silence_duration=2):
     voice_detected = False
     silence_threshold = sampling_rate / chunk_size * silence_duration
 
+    start_time = time.time()
 
     print("Monitoring for voice...")
     try:
@@ -146,6 +147,18 @@ def monitor_voice(silence_duration=2):
                 interrupted = interrupted
                 percentage = speech_prob* 100
                 rounded_value = round(percentage, 2)  # Rounds to 2 decimal places (nearest 0.01)
+
+
+
+                # Check if no voice detected for the max duration
+                elapsed_time = time.time() - start_time
+                if elapsed_time >= max_no_voice_duration and not voice_detected:
+                    frames = []  # Clear frames to start fresh
+                    audio_buffer = []
+                    silence_counter = 0
+                    no_voice_counter = 0
+                    start_time = time.time()  # Reset timer
+                    voice_detected = False  # Reset voice detected flag
 
                 if speech_prob >= speech_threshold:
                     voice_detected = True
