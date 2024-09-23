@@ -37,9 +37,9 @@ def process_full_audio(audio_file):
     # Merge all speech chunks to one audio
     save_audio('audios/user_audio.wav', collect_chunks(speech_timestamps, wav), sampling_rate=sampling_rate)
     print("Speech segments saved to 'audios/user_audio.wav'")
-
+import time
 # Function to record audio from the microphone and save it to a file
-def record_audio(file_path, silence_duration=2):
+def record_audio(file_path, silence_duration=2, max_no_voice_duration=1):
     p = pyaudio.PyAudio()
     stream = p.open(format=pyaudio.paInt16, channels=1, rate=sampling_rate, input=True, frames_per_buffer=chunk_size)
     frames = []
@@ -47,7 +47,7 @@ def record_audio(file_path, silence_duration=2):
     silence_counter = 0
     voice_detected = False
     silence_threshold = sampling_rate / chunk_size * silence_duration
-
+    start_time = time.time()
     print("Monitoring voice...")
     try:
         while True:
@@ -63,6 +63,17 @@ def record_audio(file_path, silence_duration=2):
                 speech_prob = process_chunk(chunk)
                 percentage = speech_prob* 100
                 rounded_value = round(percentage, 2)  # Rounds to 2 decimal places (nearest 0.01)
+
+                # Check if no voice detected for the max duration
+                elapsed_time = time.time() - start_time
+                if elapsed_time >= max_no_voice_duration and not voice_detected:
+                    print("No voice detected for 1 minute, restarting recording.")
+                    frames = []  # Clear frames to start fresh
+                    audio_buffer = []
+                    silence_counter = 0
+                    no_voice_counter = 0
+                    start_time = time.time()  # Reset timer
+                    voice_detected = False  # Reset voice detected flag
 
                 if speech_prob >= speech_threshold:
                     print(f"Voice detected at {rounded_value}%")
@@ -107,15 +118,12 @@ def transcribe_with_whisper(audio_file, whisper_model):
 def start(whisper_model, use_recording=True):
     audio_file = "audios/user_audio.wav"
     
-
-        
     # Record new audio
     record_audio(audio_file)
 
-
     process_full_audio(audio_file)    # Process full audio
 
-    # Transcribe the recorded or default audio
+    # Transcribe the recorded
     user_input = transcribe_with_whisper(audio_file, whisper_model)
     
     print("User: ", user_input)
@@ -125,5 +133,7 @@ def start(whisper_model, use_recording=True):
         file.write(user_input)
 
 # while True:
-    # start(whisper_model)
+#     start(whisper_model)
+
+
 
