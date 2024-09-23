@@ -32,6 +32,6 @@ pip install -r requirements.txt
 ## Run.
 6.
 ```bash
-python emma.interrupt.py
+python main.py
 ```
 
