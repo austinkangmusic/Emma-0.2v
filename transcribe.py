@@ -39,7 +39,7 @@ def process_full_audio(audio_file):
     print("Speech segments saved to 'audios/user_audio.wav'")
 import time
 # Function to record audio from the microphone and save it to a file
-def record_audio(file_path, silence_duration=2, max_no_voice_duration=1):
+def record_audio(file_path, silence_duration=2, max_no_voice_duration=60):
     p = pyaudio.PyAudio()
     stream = p.open(format=pyaudio.paInt16, channels=1, rate=sampling_rate, input=True, frames_per_buffer=chunk_size)
     frames = []
@@ -67,7 +67,6 @@ def record_audio(file_path, silence_duration=2, max_no_voice_duration=1):
                 # Check if no voice detected for the max duration
                 elapsed_time = time.time() - start_time
                 if elapsed_time >= max_no_voice_duration and not voice_detected:
-                    print("No voice detected for 1 minute, restarting recording.")
                     frames = []  # Clear frames to start fresh
                     audio_buffer = []
                     silence_counter = 0
