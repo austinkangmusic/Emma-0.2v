@@ -3,13 +3,18 @@ import files
 from initialize_whisper import initialize_whisper_model
 from interrupted_play import play_interruptable_audio
 from transcribe import start
-from initialize_tts import initialize_tts_model
 
-# Initialize the TTS model and latents
-model, gpt_cond_latent, speaker_embedding = initialize_tts_model()
+# from initialize_tts import initialize_tts_model
 
-import generate_voice
-from intro import initialize_emma
+# # Initialize the TTS model and latents
+# model, gpt_cond_latent, speaker_embedding = initialize_tts_model()
+
+# import generate_voice
+
+
+import generate_pyttsx3_voice
+
+# from intro import initialize_emma
 
 # Initialize LLM models
 chat_llm, utility_llm, embedding_llm = chat_utils.initialize()
@@ -41,7 +46,7 @@ first = True
 def main():
     global first
     conversation_history = []
-    initialize_emma()
+    # initialize_emma()
 
     while True:
         # DETECTION
@@ -92,7 +97,8 @@ def main():
         if tool_name in ('response', 'intervene'):
             text_to_save = tool_args.get('text', '')
             save_response(text_to_save)
-            generate_voice.run()
+            generate_pyttsx3_voice.running()
+
             play_interruptable_audio(whisper_model)
 
         elif tool_name in ('ignore', 'listen'):
